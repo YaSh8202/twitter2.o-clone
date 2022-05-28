@@ -4,8 +4,16 @@ import Image from 'next/image'
 import Feed from '../components/Feed'
 import SideBar from '../components/SideBar'
 import Widgets from '../components/Widgets'
+import { fetchTweets } from '../utils/fetchTweets'
+import { Tweet } from '../typing'
 
-const Home: NextPage = () => {
+interface Props {
+  tweets: Tweet[]
+}
+
+const Home = ({ tweets }: Props) => {
+  console.log(tweets);
+  
   return (
     <div className=' max-h-screen overflow-hidden lg:max-w-6xl mx-auto'  >
       <Head>
@@ -13,13 +21,13 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className='grid grid-cols-9' >
-      {/* SideBar */}
-      <SideBar />
+        {/* SideBar */}
+        <SideBar />
 
-      {/* Feed */}
-      <Feed />
-      {/* Widgets */}
-      <Widgets />
+        {/* Feed */}
+        <Feed tweets={tweets} />
+        {/* Widgets */}
+        <Widgets />
       </main>
     </div>
   )
@@ -27,13 +35,13 @@ const Home: NextPage = () => {
 
 export default Home
 
-export const getServerSideProps:GetServerSideProps = async (context)=>{
+export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const tweets = await fetchTweets();
 
   return {
-    props:{
-
+    props: {
+      tweets
     }
   }
 }
