@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { Dispatch, SetStateAction, useRef, useState } from 'react'
 import {
   CalendarIcon,
   EmojiHappyIcon,
@@ -7,9 +7,15 @@ import {
   SearchCircleIcon
 } from '@heroicons/react/outline'
 import { useSession } from 'next-auth/react';
-import { TweetBody } from '../typing';
+import { Tweet, TweetBody } from '../typing';
+import { fetchTweets } from '../utils/fetchTweets';
+import toast from 'react-hot-toast';
 
-const TweetBox = () => {
+interface Props {
+  setTweets: Dispatch<React.SetStateAction<Tweet[]>>
+}
+
+const TweetBox = ({ setTweets }: Props) => {
   const [input, setInput] = useState<string>("");
   const [image, setImage] = useState<string>("");
   const { data: session } = useSession();
@@ -36,12 +42,21 @@ const TweetBox = () => {
       method: 'POST'
     })
     const json = await result.json();
-    
+
+    const newTweets = await fetchTweets();
+    setTweets(newTweets)
+    toast('Tweet Posted', {
+      icon: '🚀'
+    })
+    return json
   }
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
-
+    postTweet()
+    setInput('')
+    setImage('')
+    setImageUrlIsOpen(false)
   }
 
   return (
